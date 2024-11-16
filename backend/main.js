@@ -6,7 +6,7 @@ require("express-ws")(app); // adds ws stuff to app
 
 const users = {};
 
-const waitingSessions = {};
+const waitingSessions = new Map();
 
 function serializeUser({ role, username, dateCreated }) {
   return { role, username, dateCreated: dateCreated.toISOString() };
@@ -14,13 +14,13 @@ function serializeUser({ role, username, dateCreated }) {
 
 app.ws("/connect", function (ws, req) {
   let user = null;
-  let peerConnection = null;
 
   ws.on("close", () => {
     if (user) {
-      user.connection = null;
-      if (peerConnection) {
-        peerConnection.send({ type: "peerleft" });
+      user.ws = undefined;
+      if (user.peerWs) {
+        user.peerWs.send({ type: "peerleft" });
+        user.peerWs = null;
       }
     }
   });
@@ -67,6 +67,7 @@ app.ws("/connect", function (ws, req) {
         username,
         passwordHash,
         dateCreated: new Date(),
+        ws,
       };
       ws.send(
         JSON.stringify({ type: "signup-success", user: serializeUser(user) })
@@ -87,6 +88,7 @@ app.ws("/connect", function (ws, req) {
         return;
       }
       user = users[username];
+      user.ws = ws;
       ws.send(
         JSON.stringify({ type: "login-success", user: serializeUser(user) })
       );
@@ -111,10 +113,14 @@ app.ws("/connect", function (ws, req) {
         })
       );
     } else if (data.type === "createsession") {
-      waitingSessions[uuid()] = {
-        user,
-        ws,
-      };
+      while (true) {
+        const id = uuid();
+        if (waitingSessions.has(id)) continue;
+        waitingSessions.set(id, {
+          ws,
+          user,
+        });
+      }
     } else if (data.type === "joinsession") {
       const { sessionId } = data;
       if (typeof sessionId !== "string" || !(sessionId in waitingSessions)) {
@@ -128,7 +134,7 @@ app.ws("/connect", function (ws, req) {
       }
 
       const { ws: peerWs, user: peerUser } = waitingSessions[sessionId];
-      waitingSessions[sessionId] = undefined;
+      waitingSessions.delete(sessionId);
 
       peerWs.send(
         JSON.stringify({ type: "tutorjoined", user: serializeUser(user) })
@@ -143,7 +149,7 @@ app.ws("/connect", function (ws, req) {
       ws.send(
         JSON.stringify({
           type: "getsessions-success",
-          sessions: Object.entries(waitingSessions).map(
+          sessions: [...waitingSessions.entries()].map(
             ([k, { user: peerUser }]) => [k, serializeUser(peerUser)]
           ),
         })
