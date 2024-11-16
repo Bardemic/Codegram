@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Card,
     CardContent,
@@ -12,10 +12,23 @@ import {
   } from "@/components/ui/card"
   import { Button } from "@/components/ui/button"
   import { Separator } from "@/components/ui/separator"
+  import { call } from "@/lib/ws"
+
+
+  async function getOpenTutees() {
+    const data = await call("getsessions", {});
+    console.log(data)
+    return Array.isArray(data) ? data : [];
+  }
 
 export default function TutorPage() {
     //const [openTutees, setOpenTutees] = useState([{name: "Person 1", language: "Python"}, {name: "Person 2", language: "Javascript"}, {name: "Person 3", language: "C++"}]);
-    const [openTutees, setOpenTutees] = useState([])
+    const [openTutees, setOpenTutees] = useState([]);
+    useEffect(() => {
+        getOpenTutees().then((data) => {
+            setOpenTutees(data);
+        })
+    }, []);
   return (
     <div>
       <Header />
