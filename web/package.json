@@ -10,12 +10,8 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
-<<<<<<< HEAD
     "@radix-ui/react-scroll-area": "^1.2.1",
     "@radix-ui/react-separator": "^1.1.0",
-=======
-    "@radix-ui/react-avatar": "^1.1.1",
->>>>>>> 594931947e996330ec8c66689b40aa2f9adf3c4e
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
