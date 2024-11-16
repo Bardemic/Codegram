@@ -13,19 +13,17 @@ import { Label } from "@/components/ui/label"
 import {ws} from "@/lib/ws"
 import { useState } from "react"
 import bcrypt from "bcryptjs"
+import { Checkbox } from "@/components/ui/checkbox"
 
 async function hashPassword(password) {
     const saltRounds = 6;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log(hashedPassword);
     return hashedPassword;
 }
 
 
-async function signup(username, password) {
-    console.log(username, password);
-    console.log(JSON.stringify({type: "signup", role: "tutor", username: username, passwordHash: hashPassword(password)}));
-    ws.send(JSON.stringify({type: "signup", role: "tutor", username: username, passwordHash: await hashPassword(password)})); //role, username, passwordHash
+async function signup(username, password, isTutor) {
+    ws.send(JSON.stringify({type: "signup", role: isTutor ? "tutor" : "student", username: username, passwordHash: await hashPassword(password)})); //role, username, passwordHash
     const listener = (message) => {
         ws.removeEventListener("message", listener);
         console.log(message);
@@ -35,6 +33,7 @@ async function signup(username, password) {
             return;
         }
         //redirect here
+        isTutor ? window.location.href = "/tutor" : window.location.href = "/student";
         /*data.user = {
             role: data.role,
             username: data.username
@@ -50,18 +49,23 @@ async function signup(username, password) {
 export default function SignupPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [isTutor, setIsTutor] = useState(false);
     return (
-        <div className="p-10 flex flex-col">
+        <div className="p-10 flex flex-col items-center">
             <Card className="w-72">
                 <CardHeader>
                     <CardTitle>Sign Up!</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col gap-2">
                     <Input id="username" type="username" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
                     <Input id="password" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+                    <div className="flex items-center gap-2">
+                        <Checkbox id="isTutor" checked={isTutor} onCheckedChange={(e) => setIsTutor(e)} />
+                        <label htmlFor="isTutor">I am a tutor</label>
+                    </div>
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={() => signup(username, password)}>Sign Up</Button>
+                    <Button onClick={() => signup(username, password, isTutor)}>Sign Up</Button>
                 </CardFooter>
             </Card>
         </div>
