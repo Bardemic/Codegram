@@ -113,6 +113,13 @@ app.ws("/connect", function (ws, req) {
         })
       );
     } else if (data.type === "createsession") {
+      if (!user) {
+        ws.send({
+          type: "createsession-error",
+          message: "User is not logged in.",
+        });
+        return;
+      }
       while (true) {
         const id = uuid();
         if (waitingSessions.has(id)) continue;
@@ -120,6 +127,7 @@ app.ws("/connect", function (ws, req) {
           ws,
           user,
         });
+        ws.send(JSON.stringify({ type: "createsession-success", id }));
         break;
       }
     } else if (data.type === "joinsession") {
