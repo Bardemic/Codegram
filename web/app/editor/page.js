@@ -27,6 +27,9 @@ function format(v) {
         // noice
         return `<span class="text-gray-500">${v}</span>`;
       }
+      if (v instanceof Array) {
+        return `[${v.map((v) => format(v)).join(", ")}]`;
+      }
       if (v instanceof Error) {
         const msg = v.toString();
         const colonIdx = msg.indexOf(":");
@@ -96,7 +99,7 @@ export default function Editor() {
         theme="vs-dark"
         onChange={handleEditorChange}
       />
-      <div className="py-2 px-4 overflow-y-auto">
+      <div className="py-2 px-4 overflow-y">
         <div className="text-sm">Output</div>
         <code>
           {/* yeet */}
