@@ -1,9 +1,10 @@
-import MonacoEditor from "../components/MonacoEditor";
+import MonacoEditor from "@/components/MonacoEditor";
+import EditorHeader from "@/components/EditorHeader";
 
 export default function Editor() {
   return (
     <div>
-      <header class=""></header>
+      <EditorHeader />
       <MonacoEditor />
     </div>
   );
