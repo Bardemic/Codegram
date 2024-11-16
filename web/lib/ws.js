@@ -1,7 +1,19 @@
 "use client";
 
-if (!globalThis.__ws) {
-  globalThis.__ws = new WebSocket("ws://localhost:9000/connect");
+// send() fails if not opened yet so we queue up until the conn is opened
+if (globalThis.__ws === undefined) {
+  const __ws = new WebSocket("ws://localhost:9000/connect");
+  const send = __ws.send;
+  const queue = [];
+  __ws.send = (...args) => queue.push(args);
+  __ws.onopen = () => {
+    __ws.send = send;
+    for (const args of queue) {
+      send(...args);
+    }
+    queue.length = 0;
+  };
+  globalThis.__ws = __ws;
 }
 
 export const ws = globalThis.__ws;
