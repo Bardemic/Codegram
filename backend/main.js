@@ -120,6 +120,7 @@ app.ws("/connect", function (ws, req) {
           ws,
           user,
         });
+        break;
       }
     } else if (data.type === "joinsession") {
       const { sessionId } = data;
