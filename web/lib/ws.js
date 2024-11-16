@@ -3,7 +3,7 @@
 // send() fails if not opened yet so we queue up until the conn is opened
 if (globalThis.__ws === undefined) {
   const __ws = new WebSocket("ws://localhost:9000/connect");
-  const send = __ws.send;
+  const send = __ws.send.bind(__ws);
   const queue = [];
   __ws.send = (...args) => queue.push(args);
   __ws.onopen = () => {
