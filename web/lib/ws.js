@@ -7,12 +7,12 @@ if (!globalThis.__ws) {
 export const ws = globalThis.__ws;
 
 /** Stringifies data and requests with the given data. */
-export function call(type, data) {
+export function call(type, info) {
+  info.type = type;
   return new Promise((resolve, reject) => {
-    ws.send(JSON.stringify(data));
-    const listener = (msg) => {
+    const listener = ({ data: dataStr }) => {
       ws.removeEventListener("message", listener);
-      const data = JSON.parse(msg);
+      const data = JSON.parse(dataStr);
       if (data.type === `${type}-success`) {
         resolve(data);
       } else if (data.type === `${type}-error`) {
@@ -20,5 +20,6 @@ export function call(type, data) {
       }
     };
     ws.addEventListener("message", listener);
+    ws.send(JSON.stringify(info));
   });
 }
