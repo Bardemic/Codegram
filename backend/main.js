@@ -77,7 +77,7 @@ app.ws("/connect", function (ws, req) {
       ) {
         ws.send(
           JSON.stringify({
-            type: "signup-error",
+            type: "login-error",
             message: "Unknown username/password combination.",
           })
         );
@@ -85,7 +85,7 @@ app.ws("/connect", function (ws, req) {
       }
       user = users[username];
       ws.send(
-        JSON.stringify({ type: "signup-success", user: serializeUser(user) })
+        JSON.stringify({ type: "login-success", user: serializeUser(user) })
       );
     } else if (data.type === "getuser") {
       const { username } = data;
