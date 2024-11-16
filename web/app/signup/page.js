@@ -12,18 +12,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {ws} from "@/lib/ws"
 import { useState } from "react"
-import bcrypt from "bcryptjs"
+import sha256 from "js-sha256"
 import { Checkbox } from "@/components/ui/checkbox"
 
-async function hashPassword(password) {
-    const saltRounds = 6;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    return hashedPassword;
-}
-
-
 async function signup(username, password, isTutor) {
-    ws.send(JSON.stringify({type: "signup", role: isTutor ? "tutor" : "student", username: username, passwordHash: await hashPassword(password)})); //role, username, passwordHash
+    ws.send(JSON.stringify({type: "signup", role: isTutor ? "tutor" : "student", username: username, passwordHash: sha256(password)})); //role, username, passwordHash
     const listener = (message) => {
         ws.removeEventListener("message", listener);
         console.log(message);
@@ -33,7 +26,7 @@ async function signup(username, password, isTutor) {
             return;
         }
         //redirect here
-        isTutor ? window.location.href = "/tutor" : window.location.href = "/student";
+        //isTutor ? window.location.href = "/tutor" : window.location.href = "/student";
         /*data.user = {
             role: data.role,
             username: data.username
