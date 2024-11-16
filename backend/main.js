@@ -1,9 +1,12 @@
 const express = require("express");
 const app = express();
+const { v4: uuid } = require("uuid");
 
 require("express-ws")(app); // adds ws stuff to app
 
 const users = {};
+
+const waitingSessions = {};
 
 function serializeUser({ role, username, dateCreated }) {
   return { role, username, dateCreated: dateCreated.toISOString() };
@@ -105,6 +108,42 @@ app.ws("/connect", function (ws, req) {
         JSON.stringify({
           type: "getuser-success",
           user: serializeUser(users[username]),
+        })
+      );
+    } else if (data.type === "createsession") {
+      waitingSessions[uuid()] = {
+        user,
+        ws,
+      };
+    } else if (data.type === "joinsession") {
+      const { sessionId } = data;
+      if (typeof sessionId !== "string" || !(sessionId in waitingSessions)) {
+        ws.send(
+          JSON.stringify({
+            type: "joinsession-error",
+            message: "Invalid session data.",
+          })
+        );
+        return;
+      }
+
+      const { ws: peerWs, user: peerUser } = waitingSessions[sessionId];
+      waitingSessions[sessionId] = undefined;
+
+      peerWs.send(
+        JSON.stringify({ type: "tutorjoined", user: serializeUser(user) })
+      );
+      ws.send(
+        JSON.stringify({
+          type: "joinsession-success",
+          user: serializeUser(peerUser),
+        })
+      );
+    } else if (data.type === "getsessions") {
+      ws.send(
+        JSON.stringify({
+          type: "getsessions-success",
+          sessions: Object.entries(sessions),
         })
       );
     }

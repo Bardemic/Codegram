@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { ws } from "@/lib/ws";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -38,18 +39,18 @@ function format(v) {
         }
         return msg;
       }
-      return `{ ${Object.entries(v)
-        .map(([k, v]) => `${k}: ${format(v)}`)
-        .join(", ")} }`;
+      const entries = Object.entries(v);
+      if (entries.length === 0) return "{}";
+      return `{ ${entries.map(([k, v]) => `${k}: ${format(v)}`).join(", ")} }`;
   }
 }
 
 export default function Editor() {
-  const [value, setValue] = useState('console.log("Hello, world!")');
+  let value = 'console.log("Hello, world!")\n';
   const [output, setOutput] = useState("");
 
   const handleEditorChange = (newValue) => {
-    setValue(newValue);
+    value = newValue;
     execute();
   };
 
@@ -62,7 +63,7 @@ export default function Editor() {
         return;
       }
       setOutput(
-        (old) => old + args.map((s) => format(s)).join("<br>") + "<br>"
+        (old) => old + args.map((s) => format(s)).join("&nbsp;") + "<br>"
       );
       log(output);
     };
@@ -76,7 +77,10 @@ export default function Editor() {
   };
 
   return (
-    <div>
+    <div
+      className="h-screen overflow-hidden grid"
+      style={{ gridTemplateRows: "auto 60vh 1fr" }}
+    >
       <header className="border-b shadow">
         <div className="container mx-auto grid grid-cols-3 h-16 items-center px-4">
           <div className="text-lg font-bold">CodeGram</div>
@@ -90,14 +94,17 @@ export default function Editor() {
           </div>
         </div>
       </header>
-      <MonacoEditor
-        height="60vh"
-        defaultLanguage="javascript"
-        defaultValue={value}
-        theme="vs-dark"
-        onChange={handleEditorChange}
-      />
-      <div className="py-2 px-4 overflow-y">
+      <div className="grid" style={{ gridTemplateColumns: "3fr 1fr" }}>
+        <MonacoEditor
+          height="60vh"
+          defaultLanguage="javascript"
+          defaultValue={value}
+          theme="vs-dark"
+          onChange={handleEditorChange}
+        />
+        <div></div>
+      </div>
+      <div className="py-2 px-4 overflow-y-scroll">
         <div className="text-sm">Output</div>
         <code>
           {/* yeet */}
