@@ -19,6 +19,7 @@ async function login(username, password) {
         console.log(username, password);
         const data = await call("login", {username: username, passwordHash: sha256(password)});
         console.log(data);
+        data.role === "tutor" ? window.location.href = "/tutor" : window.location.href = "/student";
     } catch (error) {
         alert(error);
         return;

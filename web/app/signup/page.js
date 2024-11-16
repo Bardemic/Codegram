@@ -25,12 +25,7 @@ async function signup(username, password, isTutor) {
             alert(data.message);
             return;
         }
-        //redirect here
-        //isTutor ? window.location.href = "/tutor" : window.location.href = "/student";
-        /*data.user = {
-            role: data.role,
-            username: data.username
-        };*/
+        isTutor ? window.location.href = "/tutor" : window.location.href = "/student";
     }
     ws.addEventListener("message", listener);
 
