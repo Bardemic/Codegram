@@ -32,7 +32,7 @@ export default function TutorCard({ avatarUrl, name, subjects, tutorId }) {
       </div>
 
       {/* Invite Button */}
-      <Button className="border" onClick={onInvite} variant="primary">
+      <Button className="border border-neutral-300 hover:bg-neutral-700" onClick={onInvite} variant="primary">
         Invite
       </Button>
     </div>
