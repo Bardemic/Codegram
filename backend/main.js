@@ -143,10 +143,9 @@ app.ws("/connect", function (ws, req) {
       ws.send(
         JSON.stringify({
           type: "getsessions-success",
-          sessions: Object.entries(sessions).map(([k, { user: peerUser }]) => [
-            k,
-            serializeUser(peerUser),
-          ]),
+          sessions: Object.entries(waitingSessions).map(
+            ([k, { user: peerUser }]) => [k, serializeUser(peerUser)]
+          ),
         })
       );
     }
