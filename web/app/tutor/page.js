@@ -10,20 +10,20 @@ import { call } from "@/lib/ws";
 import { useRouter } from "next/navigation";
 
 const tutoringStats = [
-  { day: "Monday", sessions: 7 },
-  { day: "Tuesday", sessions: 5 },
-  { day: "Wednesday", sessions: 8 },
-  { day: "Thursday", sessions: 6 },
-  { day: "Friday", sessions: 10 },
-  { day: "Saturday", sessions: 4 },
-  { day: "Sunday", sessions: 3 },
+  { day: "Monday", sessions: 0 },
+  { day: "Tuesday", sessions: 0 },
+  { day: "Wednesday", sessions: 0 },
+  { day: "Thursday", sessions: 0 },
+  { day: "Friday", sessions: 0 },
+  { day: "Saturday", sessions: 0 },
+  { day: "Sunday", sessions: 0 },
 ];
 
 const languageData = [
-  { name: "JavaScript", value: 26 },
-  { name: "Python", value: 39 },
-  { name: "Java", value: 25 },
-  { name: "C++", value: 10 },
+  { name: "JavaScript", value: 100 },
+  { name: "Python", value: 0 },
+  { name: "Java", value: 0 },
+  { name: "C++", value: 0 },
 ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -100,7 +100,7 @@ export default function TutorPage() {
           {/* Table for Daily Sessions */}
           <Card>
             <CardTitle className="text-lg font-medium p-4">
-              Weekly Tutoring Sessions
+              This Week's Completed Sessions
             </CardTitle>
             <CardContent>
               <Table>
