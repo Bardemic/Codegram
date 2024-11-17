@@ -1,4 +1,4 @@
-import TutorCard from "@/components/TutorCard";
+import StudentPLCard from "@/components/StudentPLCard";
 import Header from "@/components/Header";
 
 export default function Page() {
@@ -7,24 +7,10 @@ export default function Page() {
     <div>
       <Header />
       <div className="p-10">
-        <TutorCard
-          avatarUrl="https://via.placeholder.com/150"
-          name="Jane Doe"
-          subjects={["Python", "C++", "Java"]}
-          tutorId={1}
-        />
-        <TutorCard
-          avatarUrl="https://via.placeholder.com/150"
-          name="Jane Doe"
-          subjects={["Python", "C++", "Java"]}
-          tutorId={1}
-        />
-        <TutorCard
-          avatarUrl="https://via.placeholder.com/150"
-          name="Jane Doe"
-          subjects={["Python", "C++", "Java"]}
-          tutorId={1}
-        />
+        <StudentPLCard id={0}/>
+        <StudentPLCard id={1}/>
+        <StudentPLCard id={2}/>
+        <StudentPLCard id={3}/>
       </div>
     </div>
   );

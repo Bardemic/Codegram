@@ -25,8 +25,6 @@ const languageData = [
   { name: "C++", value: 10 },
 ];
 
-
-
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 async function getOpenTutees() {
@@ -44,7 +42,7 @@ async function getOpenTutees() {
     }
 }
 
-  export default function TutorPage() {
+export default function TutorPage() {
   const totalSessions = tutoringStats.reduce((acc, stat) => acc + stat.sessions, 0);
   const languageTotal = languageData.reduce((acc, data) => acc + data.value, 0);
   const [openTutees, setOpenTutees] = useState([]);
