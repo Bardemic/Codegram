@@ -27,7 +27,8 @@ export default function StudentHelpCard({ name, avatarUrl, id, language }) {
         </div>
       </CardContent>
       <Button
-        className="ml-auto border-2 border-white text-white bg-transparent hover:bg-black hover:text-white"
+        className="border"
+        variant="outline"
         onClick={async () => {
           try {
             const { user } = await call("joinsession", {
