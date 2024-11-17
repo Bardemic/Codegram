@@ -38,7 +38,7 @@ async function signup(username, password, isTutor, router) {
     localStorage.setItem("username", username);
     localStorage.setItem("passwordHash", passwordHash);
     current.user = data.user;
-    router.push("/login");
+    router.push(data.user.role === "tutor" ? "/tutor" : "/student");
   };
   ws.addEventListener("message", listener);
 }
