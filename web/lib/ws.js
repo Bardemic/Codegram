@@ -16,6 +16,7 @@ if (globalThis.__ws === undefined) {
   globalThis.__ws = __ws;
 }
 
+export const current = { user: null };
 export const ws = globalThis.__ws;
 
 /** Stringifies data and requests with the given data. */

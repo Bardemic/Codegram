@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {ws, call} from "@/lib/ws"
+import {ws, call, current} from "@/lib/ws"
 import { useState } from "react"
 import sha256 from "js-sha256"
 import { useRouter } from "next/navigation"
@@ -17,7 +17,11 @@ import { useRouter } from "next/navigation"
 async function login(username, password, router) {
     try {
         console.log(username, password);
-        const data = await call("login", {username: username, passwordHash: sha256(password)});
+        const passwordHash = sha256(password);
+        const data = await call("login", {username: username, passwordHash});
+        current.user = data.user;
+        localStorage.setItem("username", username);
+        localStorage.setItem("passwordHash", passwordHash);
         console.log(data);
         data.user.role === "tutor" ? router.push("/tutor") : router.push("/student");
     } catch (error) {
