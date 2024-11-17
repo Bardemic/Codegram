@@ -362,6 +362,7 @@ export default function Editor() {
       className="h-screen overflow-hidden grid"
       style={{ gridTemplateRows: "auto 60vh 1fr" }}
     >
+      <title>Help Session</title>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         {/* <DialogTrigger asChild>
           <Button onClick={() => setIsOpen(true)}>Show Confirmation</Button>
