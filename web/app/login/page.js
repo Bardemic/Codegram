@@ -24,6 +24,7 @@ async function login(username, password, router, toast) {
     current.user = data.user;
     localStorage.setItem("username", username);
     localStorage.setItem("passwordHash", passwordHash);
+    localStorage.setItem("role", data.user.role);
     console.log(data);
     data.user.role === "tutor"
       ? router.push("/tutor")

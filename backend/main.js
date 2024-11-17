@@ -4,12 +4,33 @@ const { v4: uuid } = require("uuid");
 
 require("express-ws")(app); // adds ws stuff to app
 
-const users = {};
+const users = {
+  john: {
+    role: "student",
+    username: "john",
+    passwordHash:
+      "96d9632f363564cc3032521409cf22a852f2032eec099ed5967c0d000cec607a",
+    dateCreated: new Date(),
+  },
+  cena: {
+    role: "tutor",
+    username: "cena",
+    passwordHash:
+      "507f8ded27f5b96fa908bd9bba10996849b4d189c235b117df15c3e73624623e",
+    dateCreated: new Date(),
+  },
+};
 
 const waitingSessions = new Map();
 
-function serializeUser({ role, username, dateCreated }) {
-  return { role, username, dateCreated: dateCreated.toISOString() };
+function serializeUser({ role, username, dateCreated, sessionId, peer }) {
+  return {
+    role,
+    username,
+    dateCreated: dateCreated.toISOString(),
+    sessionId,
+    peer: peer ? peer.username : undefined,
+  };
 }
 
 app.ws("/connect", function (ws, req) {
@@ -18,9 +39,12 @@ app.ws("/connect", function (ws, req) {
   ws.on("close", () => {
     if (user) {
       user.ws = undefined;
-      if (user.peerWs) {
-        user.peerWs.send(JSON.stringify({ type: "peerleft" }));
-        user.peerWs = null;
+      user.sessionId = undefined;
+      if (user.peer) {
+        user.peer.ws.send(JSON.stringify({ type: "peerleft" }));
+        user.peer.sessionId = undefined;
+        user.peer.peer = undefined;
+        user.peer = undefined;
       }
     }
   });
@@ -122,19 +146,26 @@ app.ws("/connect", function (ws, req) {
         );
         return;
       }
+      if (user.sessionId) {
+        ws.send(
+          JSON.stringify({
+            type: "createsession-error",
+            message: "User is already waiting for or in a help room.",
+          })
+        );
+        return;
+      }
       while (true) {
         const id = uuid();
         if (waitingSessions.has(id)) continue;
-        waitingSessions.set(id, {
-          ws,
-          user,
-        });
+        waitingSessions.set(id, user);
+        user.sessionId = id;
         ws.send(JSON.stringify({ type: "createsession-success", id }));
         break;
       }
     } else if (data.type === "joinsession") {
       const { sessionId } = data;
-      if (typeof sessionId !== "string" || !(sessionId in waitingSessions)) {
+      if (typeof sessionId !== "string" || !waitingSessions.has(sessionId)) {
         ws.send(
           JSON.stringify({
             type: "joinsession-error",
@@ -144,10 +175,25 @@ app.ws("/connect", function (ws, req) {
         return;
       }
 
-      const { ws: peerWs, user: peerUser } = waitingSessions.get(sessionId);
+      const peerUser = waitingSessions.get(sessionId);
       waitingSessions.delete(sessionId);
 
-      peerWs.send(
+      if (!peerUser.ws || peerUser.peer) {
+        ws.send(
+          JSON.stringify({
+            type: "joinsession-error",
+            message:
+              "The user has cancelled the help session or it has already been fulfilled.",
+          })
+        );
+        return;
+      }
+
+      user.isDominant = false;
+      user.peer = peerUser;
+      peerUser.peer = user;
+      peerUser.isDominant = true;
+      peerUser.ws.send(
         JSON.stringify({ type: "tutorjoined", user: serializeUser(user) })
       );
       ws.send(
@@ -160,11 +206,55 @@ app.ws("/connect", function (ws, req) {
       ws.send(
         JSON.stringify({
           type: "getsessions-success",
-          sessions: [...waitingSessions.entries()].map(
-            ([k, { user: peerUser }]) => [k, serializeUser(peerUser)]
-          ),
+          sessions: [...waitingSessions.entries()].map(([k, peerUser]) => [
+            k,
+            serializeUser(peerUser),
+          ]),
         })
       );
+    } else if (data.type === "codeupdate") {
+      const { source } = data;
+      if (typeof source !== "string") {
+        ws.send(
+          JSON.stringify({
+            type: "error",
+            message: "Invalid code update data.",
+          })
+        );
+        return;
+      }
+
+      if (!user.isDominant || !user.peer) {
+        return;
+      }
+
+      user.peer.ws.send(
+        JSON.stringify({
+          type: "codeupdate",
+          source,
+        })
+      );
+    } else if (data.type === "dominantrequest") {
+      user.peer.ws.send(
+        JSON.stringify({
+          type: "dominantrequest",
+        })
+      );
+    } else if (data.type === "dominantresponse") {
+      const { status } = data;
+      user.isDominant = !status;
+      user.peer.isDominant = status;
+      user.peer.ws.send(JSON.stringify({ type: "dominantresponse", status }));
+    } else if (data.type === "messagepeer") {
+      user.peer.ws.send(JSON.stringify(data));
+    } else if (data.type === "leavesession") {
+      user.sessionId = undefined;
+      if (user.peer) {
+        user.peer.ws.send(JSON.stringify({ type: "peerleft" }));
+        user.peer.sessionId = undefined;
+        user.peer.peer = undefined;
+        user.peer = undefined;
+      }
     } else {
       ws.send(
         JSON.stringify({
