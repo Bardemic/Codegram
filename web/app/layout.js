@@ -1,5 +1,6 @@
 "use client";
 
+import { Toaster } from "@/components/ui/toaster"
 import localFont from "next/font/local";
 import { current, call } from "@/lib/ws";
 import { useEffect } from "react";
@@ -51,7 +52,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} dark`}>
-        {children}
+        <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   );
