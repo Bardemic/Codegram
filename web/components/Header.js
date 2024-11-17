@@ -53,50 +53,48 @@ export default function Header() {
                     <div className="text-lg font-bold">Codegram</div>
                 </div>
                 <nav className="hidden md:flex space-x-4">
-                    <Link
-                        href="/"
-                        className={cn(
-                            "text-md font-medium"
-                        )}
-                    >
-                        Home
-                    </Link>
-                    {/* {current.user ? <>
+                    <Button className="hover:underline" variant="link secondary" size="sm">
                         <Link
-                            href={current.user.role === "tutor" ? "/tutor" : "/student"}
+                            href="/"
                             className={cn(
                                 "text-md font-medium"
                             )}
                         >
-                            {current.user.role === "tutor" ? "Tutoring" : "Learning"}
+                            Home
                         </Link>
-                    </> : null} */}
+                    </Button>
                     {user ? <>
+                        <Button className="hover:underline" variant="link secondary" size="sm">
+                            <Link
+                                href={role === "tutor" ? "/tutor" : "/student"}
+                                className={cn(
+                                    "text-md font-medium"
+                                )}
+                            >
+                                {role === "tutor" ? "Tutoring" : "Learning"}
+                            </Link>
+                        </Button>
+                    </> : null}
+                    <Button className="hover:underline" variant="link secondary" size="sm">
                         <Link
-                            href={role === "tutor" ? "/tutor" : "/student"}
+                            href="/about"
                             className={cn(
                                 "text-md font-medium"
                             )}
                         >
-                            {role === "tutor" ? "Tutoring" : "Learning"}
+                            About
                         </Link>
-                    </> : null}
-                    <Link
-                        href="/about"
-                        className={cn(
-                            "text-md font-medium"
-                        )}
-                    >
-                        About
-                    </Link>
-                    <Link
-                        href="/contact"
-                        className={cn(
-                            "text-md font-medium"
-                        )}
-                    >
-                        Contact
-                    </Link>
+                    </Button>
+                    <Button className="hover:underline" variant="link secondary" size="sm">
+                        <Link
+                            href="/contact"
+                            className={cn(
+                                "text-md font-medium"
+                            )}
+                        >
+                            Contact
+                        </Link>
+                    </Button>
                 </nav>
                 <div className="flex gap-4">
                     {user ? (
