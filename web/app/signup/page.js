@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {ws} from "@/lib/ws"
+import {current, ws} from "@/lib/ws"
 import { useState } from "react"
 import sha256 from "js-sha256"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -18,7 +18,8 @@ import { useRouter } from "next/navigation"
 
 
 async function signup(username, password, isTutor, router) {
-    ws.send(JSON.stringify({type: "signup", role: isTutor ? "tutor" : "student", username: username, passwordHash: sha256(password)})); //role, username, passwordHash
+    const passwordHash = sha256(password);
+    ws.send(JSON.stringify({type: "signup", role: isTutor ? "tutor" : "student", username: username, passwordHash})); //role, username, passwordHash
     const listener = (message) => {
         ws.removeEventListener("message", listener);
         console.log(message);
@@ -27,6 +28,9 @@ async function signup(username, password, isTutor, router) {
             alert(data.message);
             return;
         }
+        localStorage.setItem("username", username);
+        localStorage.setItem("passwordHash", passwordHash);
+        current.user = data.user;
         router.push("/login");
     }
     ws.addEventListener("message", listener);
