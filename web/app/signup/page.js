@@ -17,35 +17,24 @@ import sha256 from "js-sha256";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { call } from "@/lib/ws";
 
 async function signup(username, password, isTutor, router, toast) {
-  const passwordHash = sha256(password);
-  ws.send(
-    JSON.stringify({
-      type: "signup",
-      role: isTutor ? "tutor" : "student",
-      username: username,
-      passwordHash,
-    })
-  ); //role, username, passwordHash
-  const listener = (message) => {
-    ws.removeEventListener("message", listener);
-    console.log(message);
-    const data = JSON.parse(message.data);
-    if (data.type === "error") {
-      toast({
-        title: "Sign up Error",
-        description: data.message,
-      })
-      //alert(data.message);
-      return;
+  try {
+    const passwordHash = sha256(password);
+    const data = await call("signup", { role: isTutor ? "tutor" : "student", username: username, passwordHash: passwordHash})
+    if(data.type === "signup-success") {
+      localStorage.setItem("username", username);
+      localStorage.setItem("passwordHash", passwordHash);
+      current.user = data.user;
+      router.push(data.user.role === "tutor" ? "/tutor" : "/student");
     }
-    localStorage.setItem("username", username);
-    localStorage.setItem("passwordHash", passwordHash);
-    current.user = data.user;
-    router.push(data.user.role === "tutor" ? "/tutor" : "/student");
-  };
-  ws.addEventListener("message", listener);
+  } catch (error) {
+    toast({
+      title: "Sign up Error",
+      description: error,
+    })
+  }
 }
 
 export default function SignupPage() {
