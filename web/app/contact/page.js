@@ -54,7 +54,7 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              <p className="text-lg text-center">
+              <p className="text-lg text-center text-gray-500">
                 Feel free to reach out to us with any questions at{" "}
                 <a
                   href="mailto:SwanHacksWinner@gmail.com"
