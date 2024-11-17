@@ -2,7 +2,9 @@
 
 // send() fails if not opened yet so we queue up until the conn is opened
 if (globalThis.__ws === undefined) {
-  const __ws = new WebSocket("ws://localhost:9000/connect");
+  const __ws = new WebSocket(
+    "ws://928c-2610-130-110-1b-6558-8165-f749-6a47.ngrok-free.app/connect"
+  );
   const send = __ws.send.bind(__ws);
   const queue = [];
   __ws.send = (...args) => queue.push(args);

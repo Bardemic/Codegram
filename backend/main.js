@@ -39,6 +39,9 @@ app.ws("/connect", function (ws, req) {
   ws.on("close", () => {
     if (user) {
       user.ws = undefined;
+      if (user.sessionId) {
+        waitingSessions.delete(user.sessionId);
+      }
       user.sessionId = undefined;
       if (user.peer) {
         user.peer.ws.send(JSON.stringify({ type: "peerleft" }));
@@ -246,8 +249,12 @@ app.ws("/connect", function (ws, req) {
       user.peer.isDominant = status;
       user.peer.ws.send(JSON.stringify({ type: "dominantresponse", status }));
     } else if (data.type === "messagepeer") {
+      if (!user.peer || !user.peer.ws) return;
       user.peer.ws.send(JSON.stringify(data));
     } else if (data.type === "leavesession") {
+      if (user.sessionId) {
+        waitingSessions.delete(user.sessionId);
+      }
       user.sessionId = undefined;
       if (user.peer) {
         user.peer.ws.send(JSON.stringify({ type: "peerleft" }));
@@ -255,6 +262,13 @@ app.ws("/connect", function (ws, req) {
         user.peer.peer = undefined;
         user.peer = undefined;
       }
+    } else if (data.type === "getwaitlistcount") {
+      ws.send(
+        JSON.stringify({
+          type: "getwaitlistcount-success",
+          count: [...waitingSessions.keys()].length,
+        })
+      );
     } else {
       ws.send(
         JSON.stringify({

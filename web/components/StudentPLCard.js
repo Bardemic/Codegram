@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; //
 import { call } from "@/lib/ws";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
 
 const iconUrls = {
   0: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/javascript/javascript.png",
@@ -22,10 +23,19 @@ const names = {
 
 export default function StudentPLCard({ id }) {
   const router = useRouter();
-  const waitlistCount = 109450; // TODO: use actual waitlistCount using plId
+  // const waitlistCount = 109450; // TODO: use actual waitlistCount using plId
   const name = names[id];
   const iconUrl = iconUrls[id];
   const { toast } = useToast();
+  const [waitlistCount, setWaitlistCount] = useState(null);
+
+  useEffect(() => {
+    if (id !== 0) return;
+    (async () => {
+      const { count } = await call("getwaitlistcount", {});
+      setWaitlistCount(count);
+    })();
+  }, []);
 
   return (
     <div className="flex items-center justify-between w-full p-4 my-4 shadow-md rounded-xl border">
@@ -35,16 +45,25 @@ export default function StudentPLCard({ id }) {
           <AvatarFallback>{name}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="text-lg font-semibold">{name}</p>
+          <p className="text-lg font-semibold">
+            {name}
+            {id !== 0 ? " (Coming soon)" : ""}
+          </p>
           <p className="text-sm text-gray-500">
-            Currently waiting:{" "}
-            <span className="font-medium">{waitlistCount}</span>
+            {id === 0 ? (
+              <>
+                Currently waiting:{" "}
+                <span className="font-medium">{waitlistCount}</span>
+              </>
+            ) : (
+              "Language support not yet implemented"
+            )}
           </p>
         </div>
       </div>
       <Button
-        className="border border-neutral-300 hover:bg-neutral-700"
-        variant="primary"
+        className="border"
+        variant="outline"
         onClick={async () => {
           try {
             const { id } = await call("createsession", {});
