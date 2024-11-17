@@ -62,6 +62,7 @@ export default function StudentPLCard({ id }) {
         </div>
       </div>
       <Button
+        disabled={id != 0}
         className="border"
         variant="outline"
         onClick={async () => {
