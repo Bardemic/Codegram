@@ -100,7 +100,7 @@ export default function Header() {
                     {user ? (
                         <div className="flex justify-end items-center gap-4">
                             <p>{user}</p>
-                            <Button variant="outline" onClick={() => logout(router)} size="sm">Log Out</Button>
+                            <Button variant="outline" style={{ backgroundColor: "#702cdc", color: "white" }} onClick={() => logout(router)} size="sm">Log Out</Button> 
                         </div>
                     ) : (
                         <div className="flex items-center space-x-4">
