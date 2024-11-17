@@ -30,11 +30,19 @@ const languageData = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 async function getOpenTutees() {
-    await call("createsession", {});
-    const data = await call("getsessions", {});
-    console.log(data)
-    return Array.isArray(data) ? data : [];
-  }
+    try {
+        const response = await call("getsessions", {});
+        return response.sessions.map(([sessionId, user]) => ({
+            id: sessionId,
+            name: user.username,
+            avatarUrl: "", 
+            language: "JavaScript"
+        }));
+    } catch (error) {
+        console.error("Error fetching sessions:", error);
+        return [];
+    }
+}
 
   export default function TutorPage() {
   const totalSessions = tutoringStats.reduce((acc, stat) => acc + stat.sessions, 0);
