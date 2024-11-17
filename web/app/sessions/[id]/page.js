@@ -4,8 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { ws, current } from "@/lib/ws";
+import { ws, current, call } from "@/lib/ws";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -61,6 +63,8 @@ export default function Editor() {
 
   console.info(current.user.peer);
 
+  const router = useRouter();
+  let madeCall = false;
   let pc;
   let value = 'console.log("Hello, world!")\n';
   const { toast } = useToast();
@@ -68,9 +72,7 @@ export default function Editor() {
   const editorRef = useRef(null);
   const [isDominant, setIsDominant] = useState(current.user.role === "student");
   const [peerUsername, setPeerUsername] = useState(
-    current.user.role === "student"
-      ? "Waiting for student..."
-      : current.user.peer
+    current.user.role === "student" ? "Waiting for tutor..." : current.user.peer
   );
 
   let remoteVideo = useRef(null);
@@ -107,7 +109,7 @@ export default function Editor() {
       );
       await pc.setLocalDescription(answer);
     } catch (e) {
-      console.log(e);
+      console.info(e);
     }
   }
 
@@ -119,7 +121,7 @@ export default function Editor() {
     try {
       await pc.setRemoteDescription(answer);
     } catch (e) {
-      console.log(e);
+      console.info(e);
     }
   }
 
@@ -135,19 +137,24 @@ export default function Editor() {
         await pc.addIceCandidate(candidate);
       }
     } catch (e) {
-      console.log(e);
+      console.info(e);
     }
   }
-  async function hangup() {
+  async function hangup(router, title) {
     if (pc) {
       pc.close();
       pc = null;
     }
-    localStream.getTracks().forEach((track) => track.stop());
-    localStream = null;
-    startButton.current.disabled = false;
-    hangupButton.current.disabled = true;
-    muteAudButton.current.disabled = true;
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+      localStream = null;
+    }
+    await call("leavesession", {});
+    toast({
+      title,
+      description: "You have left the session.",
+    });
+    router.push(`/${current.user.role}`);
   }
 
   async function makeCall() {
@@ -178,7 +185,7 @@ export default function Editor() {
       );
       await pc.setLocalDescription(offer);
     } catch (e) {
-      console.log(e);
+      console.info(e);
     }
   }
 
@@ -187,6 +194,7 @@ export default function Editor() {
       let data = JSON.parse(e.data);
       if (data.type === "tutorjoined") {
         const description = `${data.user.username} has joined the session`;
+        current.user.peer = data.user.username;
         toast({
           title: "Tutor joined",
           description,
@@ -222,19 +230,25 @@ export default function Editor() {
         } else if (data.type === "candidate") {
           handleCandidate(data);
         }
+      } else if (data.type === "peerleft") {
+        hangup(router, `${current.user.peer} left the session`);
       }
     };
     ws.addEventListener("message", listener);
 
     (async () => {
+      if (localStream) return;
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({
+        localStream = navigator.mediaDevices.getUserMedia({
           video: true,
           audio: { echoCancellation: true },
         });
+        localStream = await localStream;
         localVideo.current.srcObject = localStream;
 
-        if (current.user.role === "tutor") {
+        if (current.user.role === "tutor" && !madeCall) {
+          console.info("make call");
+          madeCall = true;
           makeCall();
         }
       } catch (err) {
@@ -243,12 +257,21 @@ export default function Editor() {
     })();
 
     return () => {
-      if (pc) {
-        hangup();
-      }
       ws.removeEventListener("message", listener);
     };
   }, []);
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      hangup(router, "You have left the session.");
+    };
+
+    router.events?.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events?.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router]);
 
   const handleEditorChange = (newValue) => {
     value = newValue;
@@ -307,6 +330,11 @@ export default function Editor() {
             's help session
           </div>
           <div className="flex justify-end gap-5">
+            <Link href={`/${current.user.role}`}>
+              <Button variant="secondary" size="sm">
+                Leave session
+              </Button>
+            </Link>
             {!isDominant ? (
               <Button
                 variant="secondary"
@@ -338,7 +366,7 @@ export default function Editor() {
           onMount={(editor) => {
             editorRef.current = editor;
           }}
-          options={{ readOnly: current.user.role !== "student" }}
+          options={{ readOnly: current.user.role !== "student", fontSize: 16 }}
         />
         <div
           className="grid h-[60vh]"
@@ -368,7 +396,7 @@ export default function Editor() {
       </div>
       <div className="py-2 px-4 overflow-y-scroll">
         <div className="text-sm">Output</div>
-        <code>
+        <code className="text-[1.1rem]">
           {/* yeet */}
           <pre dangerouslySetInnerHTML={{ __html: output }} />
         </code>
