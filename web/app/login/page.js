@@ -12,14 +12,14 @@ import { Input } from "@/components/ui/input"
 import {ws, call} from "@/lib/ws"
 import { useState } from "react"
 import sha256 from "js-sha256"
+import { useRouter } from "next/navigation"
 
-
-async function login(username, password) {
+async function login(username, password, router) {
     try {
         console.log(username, password);
         const data = await call("login", {username: username, passwordHash: sha256(password)});
         console.log(data);
-        data.role === "tutor" ? window.location.href = "/tutor" : window.location.href = "/student";
+        data.user.role === "tutor" ? router.push("/tutor") : router.push("/student");
     } catch (error) {
         alert(error);
         return;
@@ -33,6 +33,7 @@ async function login(username, password) {
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
     return (
         <div className="p-10 flex flex-col items-center">
             <Card className="w-72">
@@ -44,7 +45,7 @@ export default function LoginPage() {
                     <Input id="password" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={() => login(username, password)}>Login</Button>
+                    <Button onClick={() => login(username, password, router)}>Login</Button>
                 </CardFooter>
             </Card>
         </div>

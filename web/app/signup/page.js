@@ -14,8 +14,10 @@ import {ws} from "@/lib/ws"
 import { useState } from "react"
 import sha256 from "js-sha256"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from "next/navigation"
 
-async function signup(username, password, isTutor) {
+
+async function signup(username, password, isTutor, router) {
     ws.send(JSON.stringify({type: "signup", role: isTutor ? "tutor" : "student", username: username, passwordHash: sha256(password)})); //role, username, passwordHash
     const listener = (message) => {
         ws.removeEventListener("message", listener);
@@ -25,7 +27,7 @@ async function signup(username, password, isTutor) {
             alert(data.message);
             return;
         }
-        isTutor ? window.location.href = "/tutor" : window.location.href = "/student";
+        router.push("/login");
     }
     ws.addEventListener("message", listener);
 
@@ -38,6 +40,7 @@ export default function SignupPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isTutor, setIsTutor] = useState(false);
+    const router = useRouter();
     return (
         <div className="p-10 flex flex-col items-center">
             <Card className="w-72">
@@ -53,7 +56,7 @@ export default function SignupPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={() => signup(username, password, isTutor)}>Sign Up</Button>
+                    <Button onClick={() => signup(username, password, isTutor, router)}>Sign Up</Button>
                 </CardFooter>
             </Card>
         </div>
