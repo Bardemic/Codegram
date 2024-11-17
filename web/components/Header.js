@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -6,11 +7,13 @@ import { useState, useEffect } from "react";
 import { current } from "@/lib/ws";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import Link from "next/link";
 
 function logout(router) {
     try {
         localStorage.removeItem("username");
         localStorage.removeItem("passwordHash");
+        localStorage.removeItem("role");
         current.user = null;
         router.push("/login");
     } catch (error) {
@@ -20,6 +23,7 @@ function logout(router) {
 
 export default function Header() {
     const [user, setUser] = useState(null);
+    const [role, setRole] = useState(null);
     const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
     const router = useRouter();
@@ -28,6 +32,7 @@ export default function Header() {
         setMounted(true);
         try {
             setUser(localStorage.getItem("username"));
+            setRole(localStorage.getItem("role"));
         } catch (error) {
             console.error(error);
         }
@@ -48,30 +53,50 @@ export default function Header() {
                     <div className="text-lg font-bold">Codegram</div>
                 </div>
                 <nav className="hidden md:flex space-x-4">
-                    <a
+                    <Link
                         href="/"
                         className={cn(
-                            "text-sm font-medium text-gray-600 hover:text-gray-900"
+                            "text-md font-medium"
                         )}
                     >
                         Home
-                    </a>
-                    <a
+                    </Link>
+                    {/* {current.user ? <>
+                        <Link
+                            href={current.user.role === "tutor" ? "/tutor" : "/student"}
+                            className={cn(
+                                "text-md font-medium"
+                            )}
+                        >
+                            {current.user.role === "tutor" ? "Tutoring" : "Learning"}
+                        </Link>
+                    </> : null} */}
+                    {user ? <>
+                        <Link
+                            href={role === "tutor" ? "/tutor" : "/student"}
+                            className={cn(
+                                "text-md font-medium"
+                            )}
+                        >
+                            {role === "tutor" ? "Tutoring" : "Learning"}
+                        </Link>
+                    </> : null}
+                    <Link
                         href="/about"
                         className={cn(
-                            "text-sm font-medium text-gray-600 hover:text-gray-900"
+                            "text-md font-medium"
                         )}
                     >
                         About
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                         href="/contact"
                         className={cn(
-                            "text-sm font-medium text-gray-600 hover:text-gray-900"
+                            "text-md font-medium"
                         )}
                     >
                         Contact
-                    </a>
+                    </Link>
                 </nav>
                 <div className="flex gap-4">
                     {user ? (

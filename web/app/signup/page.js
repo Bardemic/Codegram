@@ -30,6 +30,7 @@ async function signup(username, password, isTutor, router, toast) {
     if (data.type === "signup-success") {
       localStorage.setItem("username", username);
       localStorage.setItem("passwordHash", passwordHash);
+      localStorage.setItem("role", data.user.role);
       current.user = data.user;
       router.push(data.user.role === "tutor" ? "/tutor" : "/student");
     }
