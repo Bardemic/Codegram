@@ -9,7 +9,7 @@ export default function EditorHeader() {
   return (
     <header className="border-b shadow">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="text-lg font-bold">MyLogo</div>
+        <div className="text-lg font-bold">Codegram</div>
         <nav className="hidden md:flex space-x-4">
           <a
             href="/"
