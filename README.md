@@ -20,7 +20,10 @@ Welcome to **Codegram**, the premier platform for one-on-one programming tutorin
   - **WebSockets**: Powers the real-time code synchronization feature.
 
 - **Backend**:
-  - **Express**: A robust Node.js framework for handling server-side logic and WebSocket connections.
+  - **Express.js**: A robust Node.js framework for handling server-side logic and WebSocket connections.
+
+- **Code Collaboration**:
+  - **Monaco Editor**: A powerful code editor for real-time coding sessions.
 
 ## Setup Instructions
 
