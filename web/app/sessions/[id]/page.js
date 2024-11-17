@@ -9,6 +9,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -231,12 +239,7 @@ export default function Editor() {
       } else if (data.type === "codeupdate") {
         editorRef.current.setValue(data.source);
       } else if (data.type === "dominantrequest") {
-        const status = confirm(`Allow ${current.user.peer} to take control?`);
-        setIsDominant(!status);
-        if (status) {
-          editorRef.current.updateOptions({ readOnly: true });
-        }
-        ws.send(JSON.stringify({ type: "dominantresponse", status }));
+        setIsOpen(true);
       } else if (data.type === "dominantresponse") {
         const { status } = data;
         setIsDominant(status);
@@ -346,11 +349,52 @@ export default function Editor() {
     };
   }, []);
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  function handleRequestResponse(accepted) {
+    setIsDominant(!accepted);
+    if (accepted) {
+      editorRef.current.updateOptions({ readOnly: true });
+    }
+    ws.send(JSON.stringify({ type: "dominantresponse", status: accepted }));
+  }
+
   return (
     <div
       className="h-screen overflow-hidden grid"
       style={{ gridTemplateRows: "auto 60vh 1fr" }}
     >
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        {/* <DialogTrigger asChild>
+          <Button onClick={() => setIsOpen(true)}>Show Confirmation</Button>
+        </DialogTrigger> */}
+        <DialogContent>
+          <DialogTitle>Control request</DialogTitle>
+          <DialogDescription>
+            Would you like {current.user.peer} to take control?
+          </DialogDescription>
+          <DialogFooter>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                handleRequestResponse(false);
+                setIsOpen(false);
+              }}
+            >
+              No
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => {
+                handleRequestResponse(true);
+                setIsOpen(false);
+              }}
+            >
+              Yes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <header className="border-b shadow">
         <div className="container mx-auto grid grid-cols-3 h-16 items-center px-4">
           <div className="flex items-center">
@@ -406,7 +450,7 @@ export default function Editor() {
           onMount={(editor) => {
             editorRef.current = editor;
           }}
-          options={{ readOnly: current.user.role !== "student", fontSize: 16 }}
+          options={{ readOnly: !isDominant, fontSize: 16 }}
         />
         <div
           className="grid h-[60vh]"
