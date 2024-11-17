@@ -27,18 +27,25 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     (async () => {
-      if (
-        !current.user &&
-        localStorage.getItem("username") &&
-        localStorage.getItem("passwordHash")
-      ) {
-        const data = await call("login", {
-          username: localStorage.getItem("username"),
-          passwordHash: localStorage.getItem("passwordHash"),
-        });
-        current.user = data.user;
-        console.info("logged in from local storage");
+      if (location.pathname === "/signup" || location.pathname === "/login") {
+        return;
       }
+      try {
+        if (
+          !current.user &&
+          localStorage.getItem("username") &&
+          localStorage.getItem("passwordHash")
+        ) {
+          const data = await call("login", {
+            username: localStorage.getItem("username"),
+            passwordHash: localStorage.getItem("passwordHash"),
+          });
+          current.user = data.user;
+          console.info("logged in from local storage");
+          return;
+        }
+      } catch (_) {}
+      router.push("/login");
     })();
   }, [router.events]);
   return (
