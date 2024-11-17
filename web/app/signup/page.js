@@ -50,6 +50,7 @@ export default function SignupPage() {
   const { toast } = useToast();
   return (
     <div className="p-10 h-screen justify-center flex flex-col items-center">
+      <title>Sign up</title>
       <Card className="w-80 p-2">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
