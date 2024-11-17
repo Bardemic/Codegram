@@ -247,6 +247,14 @@ app.ws("/connect", function (ws, req) {
       user.peer.ws.send(JSON.stringify({ type: "dominantresponse", status }));
     } else if (data.type === "messagepeer") {
       user.peer.ws.send(JSON.stringify(data));
+    } else if (data.type === "leavesession") {
+      user.sessionId = undefined;
+      if (user.peer) {
+        user.peer.ws.send(JSON.stringify({ type: "peerleft" }));
+        user.peer.sessionId = undefined;
+        user.peer.peer = undefined;
+        user.peer = undefined;
+      }
     } else {
       ws.send(
         JSON.stringify({
