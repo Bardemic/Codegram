@@ -39,14 +39,12 @@ app.ws("/connect", function (ws, req) {
   ws.on("close", () => {
     if (user) {
       user.ws = undefined;
-      for (const [k, otherUser] of waitingSessions) {
-        if (user === otherUser) {
-          waitingSessions.delete(k);
-        }
-      }
+      user.sessionId = undefined;
       if (user.peer) {
         user.peer.ws.send(JSON.stringify({ type: "peerleft" }));
+        user.peer.sessionId = undefined;
         user.peer.peer = undefined;
+        user.peer = undefined;
       }
     }
   });
@@ -226,7 +224,7 @@ app.ws("/connect", function (ws, req) {
         return;
       }
 
-      if (!user.isDominant) {
+      if (!user.isDominant || !user.peer) {
         return;
       }
 
@@ -247,6 +245,8 @@ app.ws("/connect", function (ws, req) {
       user.isDominant = !status;
       user.peer.isDominant = status;
       user.peer.ws.send(JSON.stringify({ type: "dominantresponse", status }));
+    } else if (data.type === "messagepeer") {
+      user.peer.ws.send(JSON.stringify(data));
     } else {
       ws.send(
         JSON.stringify({
