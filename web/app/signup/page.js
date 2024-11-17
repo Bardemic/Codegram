@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -22,8 +22,12 @@ import { call } from "@/lib/ws";
 async function signup(username, password, isTutor, router, toast) {
   try {
     const passwordHash = sha256(password);
-    const data = await call("signup", { role: isTutor ? "tutor" : "student", username: username, passwordHash: passwordHash})
-    if(data.type === "signup-success") {
+    const data = await call("signup", {
+      role: isTutor ? "tutor" : "student",
+      username: username,
+      passwordHash: passwordHash,
+    });
+    if (data.type === "signup-success") {
       localStorage.setItem("username", username);
       localStorage.setItem("passwordHash", passwordHash);
       current.user = data.user;
@@ -33,7 +37,7 @@ async function signup(username, password, isTutor, router, toast) {
     toast({
       title: "Sign up Error",
       description: error,
-    })
+    });
   }
 }
 
@@ -51,16 +55,16 @@ export default function SignupPage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-1 mt-4">
           <div className="flex flex-col gap-6">
-              <Input
-                id="username"
-                type="username"
-                placeholder="Username"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
+            <Input
+              id="username"
+              type="username"
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Input
+              id="password"
+              type="password"
+              placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -70,11 +74,16 @@ export default function SignupPage() {
               checked={isTutor}
               onCheckedChange={(e) => setIsTutor(e)}
             />
-            <label className="text-sm my-1" htmlFor="isTutor">I am a tutor</label>
+            <label className="text-sm my-1" htmlFor="isTutor">
+              I am a tutor
+            </label>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
-          <Button className="w-full" onClick={() => signup(username, password, isTutor, router, toast)}>
+          <Button
+            className="w-full"
+            onClick={() => signup(username, password, isTutor, router, toast)}
+          >
             Sign Up
           </Button>
           <CardDescription>

@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import StudentHelpCard from "@/components/StudentHelpCard";
 import { call } from "@/lib/ws";
+import { useRouter } from "next/navigation";
 
 const tutoringStats = [
   { day: "Monday", sessions: 7 },
@@ -43,6 +44,7 @@ async function getOpenTutees() {
 }
 
 export default function TutorPage() {
+  const router = useRouter();
   const totalSessions = tutoringStats.reduce((acc, stat) => acc + stat.sessions, 0);
   const languageTotal = languageData.reduce((acc, data) => acc + data.value, 0);
   const [openTutees, setOpenTutees] = useState([]);

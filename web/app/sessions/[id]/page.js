@@ -1,9 +1,10 @@
 "use client";
 
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { ws } from "@/lib/ws";
+import { ws, current } from "@/lib/ws";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -47,10 +48,56 @@ function format(v) {
 
 export default function Editor() {
   let value = 'console.log("Hello, world!")\n';
+  const { toast } = useToast();
   const [output, setOutput] = useState("");
+  const editorRef = useRef(null);
+  const [isDominant, setIsDominant] = useState(current.user.role === "student");
+
+  useEffect(() => {
+    const listener = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "tutorjoined") {
+        const description = `${data.user.username} has joined the session`;
+        toast({
+          title: "Tutor joined",
+          description,
+        });
+        console.info(description);
+      } else if (data.type === "codeupdate") {
+        editorRef.current.setValue(data.source);
+      } else if (data.type === "dominantrequest") {
+        const status = confirm(`Allow ${current.user.peer} to take control?`);
+        setIsDominant(!status);
+        if (status) {
+          editorRef.current.updateOptions({ readOnly: true });
+        }
+        ws.send(JSON.stringify({ type: "dominantresponse", status }));
+      } else if (data.type === "dominantresponse") {
+        const { status } = data;
+        setIsDominant(status);
+        toast({
+          title: `Request ${status ? "accepted" : "denied"}`,
+          description: `${current.user.peer} responded to your control request.`,
+        });
+        if (status) {
+          editorRef.current.updateOptions({ readOnly: false });
+        }
+      }
+    };
+    ws.addEventListener("message", listener);
+    return () => {
+      ws.removeEventListener("message", listener);
+    };
+  }, []);
 
   const handleEditorChange = (newValue) => {
     value = newValue;
+    ws.send(
+      JSON.stringify({
+        type: "codeupdate",
+        source: newValue,
+      })
+    );
     execute();
   };
 
@@ -85,9 +132,27 @@ export default function Editor() {
         <div className="container mx-auto grid grid-cols-3 h-16 items-center px-4">
           <div className="text-lg font-bold">CodeGram</div>
           <div className="text-sm text-slate-200 text-center">
-            Code the world.
+            {current.user.role === "tutor"
+              ? current.user.peer
+              : current.user.username}
+            's help session
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-5">
+            {!isDominant ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  ws.send(JSON.stringify({ type: "dominantrequest" }));
+                  toast({
+                    title: "Control request sent",
+                    description: `You have requested control from ${current.user.peer}!`,
+                  });
+                }}
+              >
+                Request Control
+              </Button>
+            ) : null}
             <Button variant="default" size="sm" onClick={execute}>
               Run code
             </Button>
@@ -101,6 +166,10 @@ export default function Editor() {
           defaultValue={value}
           theme="vs-dark"
           onChange={handleEditorChange}
+          onMount={(editor) => {
+            editorRef.current = editor;
+          }}
+          options={{ readOnly: current.user.role !== "student" }}
         />
         <div></div>
       </div>

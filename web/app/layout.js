@@ -1,6 +1,6 @@
 "use client";
 
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import localFont from "next/font/local";
 import { current, call } from "@/lib/ws";
 import { useEffect, useState } from "react";
@@ -30,9 +30,7 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     (async () => {
-      if (location.pathname === "/signup" || location.pathname === "/login") {
-        return;
-      }
+      if (location.pathname === "/about" || location.pathname === "/") return;
       try {
         if (
           !current.user &&
