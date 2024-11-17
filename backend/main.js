@@ -19,7 +19,7 @@ app.ws("/connect", function (ws, req) {
     if (user) {
       user.ws = undefined;
       if (user.peerWs) {
-        user.peerWs.send({ type: "peerleft" });
+        user.peerWs.send(JSON.stringify({ type: "peerleft" }));
         user.peerWs = null;
       }
     }
@@ -114,10 +114,12 @@ app.ws("/connect", function (ws, req) {
       );
     } else if (data.type === "createsession") {
       if (!user) {
-        ws.send({
-          type: "createsession-error",
-          message: "User is not logged in.",
-        });
+        ws.send(
+          JSON.stringify({
+            type: "createsession-error",
+            message: "User is not logged in.",
+          })
+        );
         return;
       }
       while (true) {
@@ -142,7 +144,7 @@ app.ws("/connect", function (ws, req) {
         return;
       }
 
-      const { ws: peerWs, user: peerUser } = waitingSessions[sessionId];
+      const { ws: peerWs, user: peerUser } = waitingSessions.get(sessionId);
       waitingSessions.delete(sessionId);
 
       peerWs.send(
@@ -161,6 +163,13 @@ app.ws("/connect", function (ws, req) {
           sessions: [...waitingSessions.entries()].map(
             ([k, { user: peerUser }]) => [k, serializeUser(peerUser)]
           ),
+        })
+      );
+    } else {
+      ws.send(
+        JSON.stringify({
+          type: `${data.type}-error`,
+          message: "Unkown message type. L bozo.",
         })
       );
     }
