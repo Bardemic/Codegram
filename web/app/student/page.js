@@ -7,6 +7,7 @@ export default function Page() {
   return (
     <div>
       <Header />
+      <title>Student Display</title>
       <div className="p-10">
         <StudentPLCard id={0} />
         <StudentPLCard id={1} />

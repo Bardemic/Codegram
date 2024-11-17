@@ -14,6 +14,7 @@ export default function Page() {
   return (
     <div>
       <Header />
+      <title>Contact Codegram!</title>
       <div className="container mx-auto p-6">
         <Card className="shadow-md">
           <CardHeader>

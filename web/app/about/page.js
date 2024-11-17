@@ -11,6 +11,7 @@ export default function Page() {
   return (
     <div>
       <Header />
+      <title>About Codegram</title>
       <div className="container mx-auto p-6">
         <div className="space-y-8">
           

@@ -57,6 +57,7 @@ export default function TutorPage() {
   return (
     <div>
       <Header />
+      <title>Tutor Display</title>
       <div className="container mx-auto p-6 grid grid-cols-2 gap-6">
         {/* Left Section: Students Asking for Help */}
         <div>

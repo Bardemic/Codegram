@@ -45,6 +45,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   return (
     <div className="p-16 h-screen flex flex-col items-center justify-center">
+      <title>Login Codegram</title>
       <Card className="w-80 p-2">
         <CardHeader>
           <CardTitle>Login</CardTitle>

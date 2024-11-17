@@ -8,6 +8,7 @@ export default function Home() {
   return (
     <>
       <Header />
+      <title>Codegram</title>
       <div className="container mx-auto p-6 mt-12">
         <main className="flex flex-col gap-12">
           <div className="w-full grid md:grid-cols-2 gap-12 items-center">
