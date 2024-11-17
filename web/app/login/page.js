@@ -38,12 +38,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const router = useRouter();
   return (
-    <div className="p-10 flex flex-col items-center">
-      <Card className="w-72">
+    <div className="p-16 h-screen flex flex-col items-center justify-center">
+      <Card className="w-80 p-2">
         <CardHeader>
           <CardTitle>Login</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-2">
+        <CardContent className="flex flex-col gap-6 mt-4">
           <Input
             id="username"
             type="username"
@@ -57,8 +57,8 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </CardContent>
-        <CardFooter className="flex flex-col items-start gap-3">
-          <Button onClick={() => login(username, password, router)}>
+        <CardFooter className="flex flex-col items-start">
+          <Button className="w-full" onClick={() => login(username, password, router)}>
             Login
           </Button>
           <CardDescription>
