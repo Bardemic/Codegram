@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"; // Assuming ShadCN's button com
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; // Assuming ShadCN's avatar components
 import { call } from "@/lib/ws";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const iconUrls = {
   0: "https://cdn.jsdelivr.net/npm/programming-languages-logos/src/javascript/javascript.png",
@@ -24,6 +25,7 @@ export default function StudentPLCard({ id }) {
   const waitlistCount = 109450; // TODO: use actual waitlistCount using plId
   const name = names[id];
   const iconUrl = iconUrls[id];
+  const { toast } = useToast();
 
   return (
     <div className="flex items-center justify-between w-full p-4 my-4 shadow-md rounded-xl border">
@@ -44,9 +46,15 @@ export default function StudentPLCard({ id }) {
         className="border border-neutral-300 hover:bg-neutral-700"
         variant="primary"
         onClick={async () => {
-          // TODO: Stas pls catch this.
-          const { id } = await call("createsession", {});
-          router.push(`/sessions/${id}`);
+          try {
+            const { id } = await call("createsession", {});
+            router.push(`/sessions/${id}`);
+          } catch (error) {
+            toast({
+              title: "Create session Error",
+              description: error.toString(),
+            });
+          }
         }}
       >
         Get help

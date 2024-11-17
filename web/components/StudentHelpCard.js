@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { call, current } from "@/lib/ws";
 import { useRouter } from "next/navigation";
 
 export default function StudentHelpCard({ name, avatarUrl, id, language }) {
   const router = useRouter();
+  const { toast } = useToast();
   return (
     <Card className="flex items-center p-4">
       {/* <div className="relative w-16 h-16 bg-gray-300 rounded-full flex justify-center items-center mr-4"> */}
@@ -27,12 +29,18 @@ export default function StudentHelpCard({ name, avatarUrl, id, language }) {
       <Button
         className="ml-auto border-2 border-white text-white bg-transparent hover:bg-black hover:text-white"
         onClick={async () => {
-          // TODO: Stas pls try catch
-          const { user } = await call("joinsession", {
-            sessionId: id,
-          });
-          current.user.peer = user.username;
-          router.push(`/sessions/${id}`);
+          try {
+            const { user } = await call("joinsession", {
+              sessionId: id,
+            });
+            current.user.peer = user.username;
+            router.push(`/sessions/${id}`);
+          } catch (error) {
+            toast({
+              title: "Join session Error",
+              description: error.toString(),
+            });
+          }
         }}
       >
         Offer Help
