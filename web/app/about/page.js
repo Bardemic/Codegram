@@ -14,7 +14,6 @@ export default function Page() {
       <div className="container mx-auto p-6">
         <div className="space-y-8">
           
-          {/* About Codegram Section */}
           <Card className="border-2 rounded-lg p-4 shadow-lg">
             <CardHeader>
               <CardTitle className="text-3xl text-center font-semibold text-[#702cdc]">About Codegram</CardTitle>
@@ -26,7 +25,6 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          {/* Our Mission Section */}
           <Card className="border-2 rounded-lg p-4 shadow-lg">
             <CardHeader>
               <CardTitle className="text-3xl text-center font-semibold text-[#702cdc]">Our Mission</CardTitle>
@@ -38,7 +36,6 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          {/* Our Team Section */}
           <Card className="border-2 rounded-lg p-4 shadow-lg">
             <CardHeader>
               <CardTitle className="text-3xl text-center font-semibold text-[#702cdc]">Our Team</CardTitle>
@@ -55,7 +52,6 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          {/* Accordion for FAQs */}
           <Accordion type="single" collapsible>
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-[#702cdc]">What is Codegram?</AccordionTrigger>
@@ -77,7 +73,6 @@ export default function Page() {
             </AccordionItem>
           </Accordion>
 
-          {/* Call to Action Section */}
           <div className="text-center mt-6">
             <a size="lg" href="/" className="text-sm font-medium text-[#702cdc] hover:text-blue-900">
               Join Us Now
