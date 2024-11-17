@@ -1,19 +1,12 @@
 'use client';
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import StudentHelpCard from "@/components/StudentHelpCard";
-
-const students = [
-  { id: 1, name: "Alice", avatarUrl: "/avatars/alice.png", language: "JavaScript" },
-  { id: 2, name: "Bob", avatarUrl: "/avatars/bob.png", language: "Python" },
-  { id: 3, name: "Charlie", avatarUrl: "/avatars/charlie.png", language: "Java" },
-  { id: 4, name: "Diana", avatarUrl: "/avatars/diana.png", language: "C++" },
-  { id: 5, name: "Eve", avatarUrl: "/avatars/eve.png", language: "Ruby" },
-];
+import { call } from "@/lib/ws";
 
 const tutoringStats = [
   { day: "Monday", sessions: 7 },
@@ -32,11 +25,26 @@ const languageData = [
   { name: "C++", value: 10 },
 ];
 
+
+
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const TutorRequestsPage = () => {
+async function getOpenTutees() {
+    await call("createsession", {});
+    const data = await call("getsessions", {});
+    console.log(data)
+    return Array.isArray(data) ? data : [];
+  }
+
+  export default function TutorPage() {
   const totalSessions = tutoringStats.reduce((acc, stat) => acc + stat.sessions, 0);
   const languageTotal = languageData.reduce((acc, data) => acc + data.value, 0);
+  const [openTutees, setOpenTutees] = useState([]);
+  useEffect(() => {
+    getOpenTutees().then((data) => {
+        setOpenTutees(data);
+    })
+}, []);
 
   return (
     <div>
@@ -46,7 +54,7 @@ const TutorRequestsPage = () => {
         <div>
           <h2 className="text-xl font-semibold mb-4">Students Asking for Help</h2>
           <div className="space-y-4">
-            {students.map((student) => (
+            {openTutees.map((student) => (
               <StudentHelpCard 
                 key={student.id}
                 name={student.name}
@@ -110,5 +118,3 @@ const TutorRequestsPage = () => {
     </div>
   );
 };
-
-export default TutorRequestsPage;
