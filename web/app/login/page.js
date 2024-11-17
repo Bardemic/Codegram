@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -15,7 +16,7 @@ import sha256 from "js-sha256";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-async function login(username, password, router) {
+async function login(username, password, router, toast) {
   try {
     console.log(username, password);
     const passwordHash = sha256(password);
@@ -28,7 +29,10 @@ async function login(username, password, router) {
       ? router.push("/tutor")
       : router.push("/student");
   } catch (error) {
-    alert(error);
+    toast({
+      title: "Login Error",
+      description: error,
+    });
     return;
   }
 }
@@ -37,6 +41,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { toast } = useToast();
   return (
     <div className="p-16 h-screen flex flex-col items-center justify-center">
       <Card className="w-80 p-2">
@@ -58,7 +63,7 @@ export default function LoginPage() {
           />
         </CardContent>
         <CardFooter className="flex flex-col items-start">
-          <Button className="w-full" onClick={() => login(username, password, router)}>
+          <Button className="w-full" onClick={() => login(username, password, router, toast)}>
             Login
           </Button>
           <CardDescription>

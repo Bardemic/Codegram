@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast"
 import {
   Card,
   CardContent,
@@ -17,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-async function signup(username, password, isTutor, router) {
+async function signup(username, password, isTutor, router, toast) {
   const passwordHash = sha256(password);
   ws.send(
     JSON.stringify({
@@ -32,7 +33,11 @@ async function signup(username, password, isTutor, router) {
     console.log(message);
     const data = JSON.parse(message.data);
     if (data.type === "error") {
-      alert(data.message);
+      toast({
+        title: "Sign up Error",
+        description: data.message,
+      })
+      //alert(data.message);
       return;
     }
     localStorage.setItem("username", username);
@@ -48,6 +53,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [isTutor, setIsTutor] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
   return (
     <div className="p-10 h-screen justify-center flex flex-col items-center">
       <Card className="w-80 p-2">
@@ -79,7 +85,7 @@ export default function SignupPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
-          <Button className="w-full" onClick={() => signup(username, password, isTutor, router)}>
+          <Button className="w-full" onClick={() => signup(username, password, isTutor, router, toast)}>
             Sign Up
           </Button>
           <CardDescription>
