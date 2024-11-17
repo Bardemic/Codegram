@@ -104,8 +104,8 @@ export default function Header() {
                         </div>
                     ) : (
                         <div className="flex items-center space-x-4">
-                            <Button variant="outline" size="sm">Sign Up</Button>
-                            <Button size="sm">Log In</Button>
+                            <Button variant="outline" onClick={() => router.push("/signup")} size="sm">Sign Up</Button>
+                            <Button onClick={() => router.push("/login")} size="sm">Log In</Button>
                         </div>
                     )}
                     {mounted && <Button 
