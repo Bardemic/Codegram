@@ -1,15 +1,20 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 
 export default function EditorHeader() {
-    const router = useRouter();
   return (
     <header className="border-b shadow">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="text-lg font-bold">Codegram</div>
+        <div className="flex items-center">
+          <img
+            src="/favicon.ico"
+            alt="Codegram Logo"
+            className="w-6 h-6 mr-2"
+          />
+          <div className="text-lg font-bold">Codegram</div>
+        </div>
         <nav className="hidden md:flex space-x-4">
           <a
             href="/"
@@ -38,12 +43,13 @@ export default function EditorHeader() {
         </nav>
         <div className="flex items-center space-x-4">
           <Input placeholder="Search" className="w-36" />
-          <Button variant="outline" size="sm" onClick={() => router.push("/signup")}>
+          <Button variant="outline" size="sm">
             Sign Up
           </Button>
-          <Button size="sm" onClick={() => router.push("/login")}>Log In</Button>
+          <Button size="sm">Log In</Button>
         </div>
       </div>
     </header>
   );
 }
+
