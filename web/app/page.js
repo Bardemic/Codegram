@@ -47,21 +47,21 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="flex flex-col items-center p-6 rounded-lg border bg-card">
                 <Image src="/window.svg" alt="Live Sessions" width={40} height={40} className="mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Live Interactive Sessions</h3>
+                <h3 className="text-xl font-semibold mb-2 ">Live Interactive Sessions</h3>
                 <p className="text-muted-foreground text-center">
                   Connect with tutors in real-time through our seamless platform
                 </p>
               </div>
               <div className="flex flex-col items-center p-6 rounded-lg border bg-card">
                 <Image src="/file.svg" alt="Code Pass Off" width={40} height={40} className="mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Code Pass Offs</h3>
+                <h3 className="text-xl font-semibold mb-2 ">Code Pass Offs</h3>
                 <p className="text-muted-foreground text-center">
                   Demonstrate your skills through guided code reviews with tutors
                 </p>
               </div>
               <div className="flex flex-col items-center p-6 rounded-lg border bg-card">
                 <Image src="/globe.svg" alt="Progress" width={40} height={40} className="mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Track Your Progress</h3>
+                <h3 className="text-xl font-semibold mb-2 ">Track Your Progress</h3>
                 <p className="text-muted-foreground text-center">
                   Monitor your learning journey with detailed analytics
                 </p>
@@ -69,7 +69,7 @@ export default function Home() {
             </div>
           </div>
         </main>
-        <footer className="flex justify-center pt-12">
+        <footer className="flex justify-center pt-12 text-[#702cdc]">
           <p>© 2024 Codegram</p>
         </footer>
       </div>
