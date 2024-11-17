@@ -1,4 +1,3 @@
-
 'use client'
 import Header from "@/components/Header";
 import React from 'react';
@@ -18,10 +17,10 @@ export default function Page() {
           {/* About Codegram Section */}
           <Card className="border-2 rounded-lg p-4 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-3xl text-center font-semibold">About Codegram</CardTitle>
+              <CardTitle className="text-3xl text-center font-semibold text-[#702cdc]">About Codegram</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-lg text-gray-700 text-center">
+              <p className="text-lg text-gray-600 text-center">
                 Welcome to <strong>Codegram</strong>! We are committed to providing the best experience for aspiring programmers.
               </p>
             </CardContent>
@@ -30,10 +29,10 @@ export default function Page() {
           {/* Our Mission Section */}
           <Card className="border-2 rounded-lg p-4 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-3xl text-center font-semibold">Our Mission</CardTitle>
+              <CardTitle className="text-3xl text-center font-semibold text-[#702cdc]">Our Mission</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-lg text-gray-700 text-center">
+              <p className="text-lg text-gray-600 text-center">
                 We hope to make the world of code more accessible to those who are eager to learn and improve their skills.
               </p>
             </CardContent>
@@ -42,13 +41,13 @@ export default function Page() {
           {/* Our Team Section */}
           <Card className="border-2 rounded-lg p-4 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-3xl text-center font-semibold">Our Team</CardTitle>
+              <CardTitle className="text-3xl text-center font-semibold text-[#702cdc]">Our Team</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-lg text-gray-700 text-center">
+              <p className="text-lg text-gray-600 text-center">
                 We have a dedicated team of passionate individuals, comprised of college undergraduates, who understand the educational needs of aspiring programmers.
               </p>
-              <div className="mt-4 flex justify-center gap-2">
+              <div className="mt-4 flex justify-center gap-2 text-[#702cdc]">
                 <Badge variant="outline" color="blue">Web Developer</Badge>
                 <Badge variant="outline" color="green">Backend Developer</Badge>
                 <Badge variant="outline" color="red">Frontend Developer</Badge>
@@ -59,20 +58,20 @@ export default function Page() {
           {/* Accordion for FAQs */}
           <Accordion type="single" collapsible>
             <AccordionItem value="item-1">
-              <AccordionTrigger>What is Codegram?</AccordionTrigger>
-              <AccordionContent>
-                Codegram is an online platform designed to help coders recieve one-on-one programming asistance.
+              <AccordionTrigger className="text-[#702cdc]">What is Codegram?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Codegram is an online platform designed to help coders receive one-on-one programming assistance.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
-              <AccordionTrigger>Who can join Codegram?</AccordionTrigger>
-              <AccordionContent>
+              <AccordionTrigger className="text-[#702cdc]">Who can join Codegram?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
                 Anyone interested in learning programming, whether you are a complete beginner or have some experience, can join Codegram.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionTrigger>What resources do we offer?</AccordionTrigger>
-              <AccordionContent>
+              <AccordionTrigger className="text-[#702cdc]">What resources do we offer?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
                 We offer software engineers from a variety of backgrounds to be available to help you with whatever problem you may have.
               </AccordionContent>
             </AccordionItem>
@@ -80,7 +79,7 @@ export default function Page() {
 
           {/* Call to Action Section */}
           <div className="text-center mt-6">
-            <a size="lg" href="/" className="text-sm font-medium text-blue-600 hover:text-blue-900">
+            <a size="lg" href="/" className="text-sm font-medium text-[#702cdc] hover:text-blue-900">
               Join Us Now
             </a>
           </div>
@@ -90,5 +89,3 @@ export default function Page() {
     </div>
   );
 }
-
-  
