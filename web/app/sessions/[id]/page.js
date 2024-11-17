@@ -75,7 +75,6 @@ export default function Editor() {
   const router = useRouter();
   let madeCall = false;
   let pc;
-  let value = 'console.log("Hello, world!")\n';
   const { toast } = useToast();
   const [output, setOutput] = useState("");
   const editorRef = useRef(null);
@@ -305,7 +304,6 @@ export default function Editor() {
   }, [router]);
 
   const handleEditorChange = (newValue) => {
-    value = newValue;
     ws.send(
       JSON.stringify({
         type: "codeupdate",
@@ -329,7 +327,7 @@ export default function Editor() {
       log(output);
     };
     try {
-      new Function(value)();
+      new Function(editorRef.current.getValue())();
     } catch (err) {
       setOutput((old) => old + `${format(err)}` + "<br>");
       //   reportError(err);
@@ -444,7 +442,7 @@ export default function Editor() {
         <MonacoEditor
           height="60vh"
           defaultLanguage="javascript"
-          defaultValue={value}
+          defaultValue={'console.log("Hello, world!")\n'}
           theme="vs-dark"
           onChange={handleEditorChange}
           onMount={(editor) => {
