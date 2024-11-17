@@ -1,11 +1,12 @@
 "use client";
 
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import localFont from "next/font/local";
 import { current, call } from "@/lib/ws";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,11 +27,10 @@ const geistMono = localFont({
 export default function RootLayout({ children }) {
   const router = useRouter();
 
+
   useEffect(() => {
     (async () => {
-      if (location.pathname === "/signup" || location.pathname === "/login") {
-        return;
-      }
+      if (location.pathname === "/about" || location.pathname === "/") return;
       try {
         if (
           !current.user &&
@@ -50,9 +50,15 @@ export default function RootLayout({ children }) {
     })();
   }, [router.events]);
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} dark`}>
-        <main>{children}</main>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} `}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+        >
+          <main>{children}</main>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

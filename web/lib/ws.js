@@ -14,10 +14,15 @@ if (globalThis.__ws === undefined) {
     queue.length = 0;
   };
   globalThis.__ws = __ws;
+  globalThis.__call = call;
 }
 
 export const current = { user: null };
 export const ws = globalThis.__ws;
+
+if (globalThis.__current === undefined) {
+  globalThis.__current = current;
+}
 
 /** Stringifies data and requests with the given data. */
 export function call(type, info) {
