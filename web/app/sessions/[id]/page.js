@@ -8,6 +8,7 @@ import { ws, current, call } from "@/lib/ws";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -74,10 +75,19 @@ export default function Editor() {
   const [peerUsername, setPeerUsername] = useState(
     current.user.role === "student" ? "Waiting for tutor..." : current.user.peer
   );
+  const { theme, setTheme } = useTheme();
+  const [hangupSignal, setHangupSignal] = useState();
 
   let remoteVideo = useRef(null);
   let localVideo = useRef(null);
   let localStream;
+
+  // useEffect(
+  //   (message) => {
+  //     hangup(router, message);
+  //   },
+  //   [hangupSignal, router]
+  // );
 
   async function handleOffer(offer) {
     try {
@@ -145,7 +155,7 @@ export default function Editor() {
       pc.close();
       pc = null;
     }
-    if (localStream) {
+    if (localStream && !(localStream instanceof Promise)) {
       localStream.getTracks().forEach((track) => track.stop());
       localStream = null;
     }
@@ -154,7 +164,8 @@ export default function Editor() {
       title,
       description: "You have left the session.",
     });
-    router.push(`/${current.user.role}`);
+    history.back();
+    // router.push(`/${current.user.role}`);
   }
 
   async function makeCall() {
@@ -189,6 +200,22 @@ export default function Editor() {
     }
   }
 
+  // useEffect(() => {
+  //   if (hangupSignal) {
+  //     hangup(router, hangupSignal);
+  //   }
+  // }, [hangupSignal, router.events]);
+
+  useEffect(() => {
+    const listener = () => {
+      setHangupSignal("You have left the session");
+    };
+    window.addEventListener("popstate", listener);
+    return () => {
+      window.removeEventListener("popstate", listener);
+    };
+  }, []);
+
   useEffect(() => {
     const listener = (e) => {
       let data = JSON.parse(e.data);
@@ -218,6 +245,7 @@ export default function Editor() {
           description: `${current.user.peer} responded to your control request.`,
         });
         if (status) {
+          console.info("UPDATED STATUS");
           editorRef.current.updateOptions({ readOnly: false });
         }
       } else if (data.type === "messagepeer") {
@@ -231,7 +259,7 @@ export default function Editor() {
           handleCandidate(data);
         }
       } else if (data.type === "peerleft") {
-        hangup(router, `${current.user.peer} left the session`);
+        setHangupSignal(`${current.user.peer} left the session`);
       }
     };
     ws.addEventListener("message", listener);
@@ -263,7 +291,7 @@ export default function Editor() {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      hangup(router, "You have left the session.");
+      setHangupSignal("You have left the session.");
     };
 
     router.events?.on("routeChangeComplete", handleRouteChange);
@@ -305,6 +333,18 @@ export default function Editor() {
     }
     console.log = log;
   };
+
+  useEffect(() => {
+    const oldTheme = theme;
+    if (theme !== "dark") {
+      setTheme("dark");
+    }
+    return () => {
+      if (oldTheme !== "dark") {
+        setTheme(oldTheme);
+      }
+    };
+  }, []);
 
   return (
     <div
